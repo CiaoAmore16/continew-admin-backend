@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.continew.admin</groupId>
+        <artifactId>continew-admin</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>continew-server</artifactId>
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>API 及打包部署模块</description>
+
+    <properties>
+        <!-- L3 API 测试组过滤开关：默认不执行 api 组；-Papi-test 时反向只执行该组 -->
+        <surefire.groups></surefire.groups>
+        <surefire.excludedGroups>api</surefire.excludedGroups>
+    </properties>
+
+    <dependencies>
+        <!-- 系统管理模块 -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>continew-system</artifactId>
+        </dependency>
+
+
+        <!-- 能力开放插件 -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>continew-plugin-open</artifactId>
+        </dependency>
+
+        <!-- 租户插件 -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>continew-plugin-tenant</artifactId>
+        </dependency>
+
+        <!-- 任务调度插件 -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>continew-plugin-schedule</artifactId>
+        </dependency>
+
+        <!-- 代码生成器插件 -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>continew-plugin-generator</artifactId>
+        </dependency>
+
+        <!-- ContiNew Starter 链路追踪模块 -->
+        <dependency>
+            <groupId>top.continew.starter</groupId>
+            <artifactId>continew-starter-trace</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Micrometer Tracing Brave 桥接实现（Boot 4 的 spring-boot-micrometer-tracing-brave 只提供自动装配，桥接实现不再传递引入，版本由 Spring Boot BOM 管理） -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-brave</artifactId>
+        </dependency>
+
+        <!-- Liquibase（用于管理数据库版本，跟踪、管理和应用数据库变化；Boot 4 起自动配置拆分至独立模块，starter 负责引入 liquibase-core 与自动配置） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Testcontainers 集成测试（仅测试期使用；版本由 parent 依赖链的 spring-boot-dependencies 管理，不声明版本号） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mysql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- REST Assured（L3 API 黑盒测试，对脚本起的独立实例发真实 HTTP；版本由根 POM 统一管理） -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- 设置构建的 jar 包名 -->
+        <finalName>${project.parent.name}</finalName>
+        <plugins>
+            <!-- Spring Boot 可执行 JAR 打包插件 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- 是否跳过 Spring Boot 的重新打包操作 -->
+                    <skip>${spring-boot.repackage.skip}</skip>
+                    <!-- 是否将系统作用域的依赖包含进去 -->
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- 纯单元测试与 Testcontainers 集成测试均随默认 surefire 配置执行；
+                 L3 API 黑盒测试以 @Tag("api") 标记，默认排除，-Papi-test 时反向只跑该组。
+                 组过滤经属性间接配置：profile 无法用空标签覆盖父配置值（Maven 合并保留父值），
+                 属性覆盖则是完全替换，故此处以属性占位 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <groups>${surefire.groups}</groups>
+                    <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- L3 API 黑盒测试：只运行 @Tag("api") 组，配合 scripts/test/api-smoke.sh 对脚本起的独立实例发真实 HTTP；
+             命令行需加 -Dsurefire.failIfNoSpecifiedTests=false，避免无匹配用例时失败 -->
+        <profile>
+            <id>api-test</id>
+            <properties>
+                <surefire.groups>api</surefire.groups>
+                <surefire.excludedGroups></surefire.excludedGroups>
+            </properties>
+        </profile>
+
+        <!-- 胖包模式：将依赖、配置文件等打包到 jar 包之内 -->
+        <profile>
+            <id>fat-jar</id>
+            <properties>
+                <!-- 是否跳过 Spring Boot 的重新打包操作 -->
+                <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
+            </properties>
+        </profile>
+
+        <!-- 瘦包模式：将依赖、配置文件等打包到 jar 包之外 -->
+        <profile>
+            <id>thin-jar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- 是否跳过 Spring Boot 的重新打包操作 -->
+                <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+                <!-- 启动类 -->
+                <main-class>top.continew.admin.ContiNewAdminApplication</main-class>
+                <!-- 程序 jar 输出目录 -->
+                <bin-path>bin/</bin-path>
+                <!-- 配置文件输出目录 -->
+                <config-path>config/</config-path>
+                <!-- 依赖 jar 输出目录 -->
+                <lib-path>lib/</lib-path>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <!-- 排除配置文件 -->
+                            <excludes>
+                                <exclude>${config-path}</exclude>
+                                <exclude>db/</exclude>
+                                <exclude>templates/</exclude>
+                                <exclude>logback-spring.xml</exclude>
+                            </excludes>
+                            <archive>
+                                <manifest>
+                                    <mainClass>${main-class}</mainClass>
+                                    <!-- 为 MANIFEST.MF 中的 Class-Path 加入依赖 jar 目录前缀 -->
+                                    <classpathPrefix>../${lib-path}</classpathPrefix>
+                                    <addClasspath>true</addClasspath>
+                                    <!-- jar 包不包含唯一版本标识 -->
+                                    <useUniqueVersions>false</useUniqueVersions>
+                                </manifest>
+                                <manifestEntries>
+                                    <!--为 MANIFEST.MF 中的 Class-Path 加入配置文件目录前缀 -->
+                                    <Class-Path>../${config-path}</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                            <outputDirectory>${project.build.directory}/app/${bin-path}</outputDirectory>
+                        </configuration>
+                    </plugin>
+                    <!-- 拷贝依赖 jar -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-dependencies</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/app/${lib-path}</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- 拷贝配置文件 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/main/resources/${config-path}</directory>
+                                        </resource>
+                                        <resource>
+                                            <directory>src/main/resources</directory>
+                                            <includes>
+                                                <include>db/</include>
+                                                <include>templates/</include>
+                                                <include>logback-spring.xml</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                    <outputDirectory>${project.build.directory}/app/${config-path}</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

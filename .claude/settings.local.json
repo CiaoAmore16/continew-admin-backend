@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(unzip -p continew-admin.jar META-INF/MANIFEST.MF)",
+      "Bash(unzip -p \"C:/Users/三纪/Desktop/continew-admin-dev/continew-server/target/app/bin/continew-admin.jar\" META-INF/MANIFEST.MF)",
+      "Bash(curl -s -X POST \"http://127.0.0.1:8000/auth/login\" -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"AHqepIog76j36s5lEMdOVuAtpRWjyb5EWOCCxE8uC9ZxEhunn+RLqc0K1l9lNNZkjrnqMvI7kH4neS0s6xVasw==\",\"captcha\":\"htq4\",\"uuid\":\"a5eb66b6-abeb-49af-bd26-d5450d308fa1\",\"clientId\":\"ef51c9a3e9046c4f2ea45142c8a8344a\",\"authType\":\"ACCOUNT\"}')",
+      "Bash(.venv-face/Scripts/python.exe -m py_compile test_pad_models.py)",
+      "Bash(.venv-face/Scripts/python.exe -m py_compile test_random_liveness.py)"
+    ]
+  }
+}

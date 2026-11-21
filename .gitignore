@@ -1,0 +1,50 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.flattened-pom.xml
+
+# IntelliJ IDEA
+.idea
+!.idea/icon.png
+*.iws
+*.iml
+*.ipr
+
+# VS Code
+.vscode/
+
+# Vibe Coding
+.workbuddy/*
+!.workbuddy/skills/
+!.workbuddy/skills/**
+!.workbuddy/.mcp.json
+.codebuddy/*
+!.codebuddy/skills/
+!.codebuddy/skills/**
+!.codebuddy/.mcp.json
+.zcodeignore
+
+# Temp
+*.log
+*.log.gz
+*.logs
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# Sensitive files
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.jks
+application-local.yml
+application-local.yaml
+
+# 测试环境本地文件（scripts/test/up.sh 探测的端口与本地凭据，不入库）
+docker/test/.ports.env
+docker/test/.env
