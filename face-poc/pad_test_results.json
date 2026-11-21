@@ -1,0 +1,77 @@
+{
+  "timestamp": "2026-11-14T11:42:12",
+  "threshold": 0.5,
+  "note": "阈值与类别映射仅为实验参考，未经安全评估",
+  "models": {
+    "v1se": {
+      "model": "V1SE",
+      "frames": 1350,
+      "real": 928,
+      "attack": 422,
+      "avg_real_prob": 0.6653,
+      "avg_latency_ms": 1.89
+    },
+    "v2": {
+      "model": "V2",
+      "frames": 1350,
+      "real": 1297,
+      "attack": 53,
+      "avg_real_prob": 0.9281,
+      "avg_latency_ms": 1.57
+    }
+  },
+  "scenarios": {
+    "v1se": {
+      "model": "V1SE",
+      "scenarios": {
+        "真人": {
+          "frames": 590,
+          "real": 436,
+          "attack": 154,
+          "avg_real_prob": 0.7043,
+          "avg_latency_ms": 2.06
+        },
+        "手机静态照片": {
+          "frames": 277,
+          "real": 186,
+          "attack": 91,
+          "avg_real_prob": 0.6921,
+          "avg_latency_ms": 1.74
+        },
+        "手机播放视频": {
+          "frames": 483,
+          "real": 306,
+          "attack": 177,
+          "avg_real_prob": 0.6021,
+          "avg_latency_ms": 1.76
+        }
+      }
+    },
+    "v2": {
+      "model": "V2",
+      "scenarios": {
+        "真人": {
+          "frames": 590,
+          "real": 575,
+          "attack": 15,
+          "avg_real_prob": 0.9627,
+          "avg_latency_ms": 1.78
+        },
+        "手机静态照片": {
+          "frames": 277,
+          "real": 276,
+          "attack": 1,
+          "avg_real_prob": 0.988,
+          "avg_latency_ms": 1.39
+        },
+        "手机播放视频": {
+          "frames": 483,
+          "real": 446,
+          "attack": 37,
+          "avg_real_prob": 0.8514,
+          "avg_latency_ms": 1.43
+        }
+      }
+    }
+  }
+}
